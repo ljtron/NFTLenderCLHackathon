@@ -11,16 +11,15 @@ pragma solidity ^0.8.0;
     allow the borrower to cancel loan
 
     when checking the price create a function with params(_loanId) and saves the request Id 
+    interest rate is 4.35%
 */
 
 import "hardhat/console.sol";
 import "./Token.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 
 contract LendingContract{
-    using SafeMath for uint;
 
     struct loanStruct{
         address borrower; // borrowers address
@@ -31,6 +30,7 @@ contract LendingContract{
         bool cancelled;
     }
 
+    event loanCreated(uint loanId);
     event funded(uint loanId, uint amount, address sender);
     event loanCancelled(uint loanId);
     event loanDefaulted(uint loanId);
@@ -56,6 +56,7 @@ contract LendingContract{
         require(loans[_loanId].borrower == msg.sender, "The borrower of the loan must call this function");
         _;
     }
+
     // change to internal so only the smart contract can communicate to request
     // have the user upload the nft item and calculate the price on the smart contract
     function requestData(uint _amount) internal returns(uint){ 
@@ -67,13 +68,18 @@ contract LendingContract{
         loansArray.push(idIndex); 
         payments[idIndex][msg.sender] = 0;
         amountPayed[idIndex] = 0;
+        emit loanCreated(idIndex);
+
+
         idIndex += 1;
         return (idIndex - 1);
     }
 
     // takes the contract address of the nft and checks the price
-    function request(uint _amount) public{
+    // also checks if the nft address exist
+    function request(uint _amount) public returns(uint){
         requestData(_amount);
+        return(1);
     }
 
     function cancelRequest(uint _loanId) payable public LoanNotApproved(_loanId) borrowerLoanRequest(_loanId){
