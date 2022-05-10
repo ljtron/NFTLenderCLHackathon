@@ -2,6 +2,7 @@ pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "hardhat/console.sol";
+// save data in a mapping for the nft address to bytes
 
 contract OpenSeaNftPrice is ChainlinkClient{
     using Chainlink for Chainlink.Request;

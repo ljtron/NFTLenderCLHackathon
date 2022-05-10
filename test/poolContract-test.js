@@ -55,6 +55,10 @@ describe("Pool money", function () {
             var result = await contractInstance.payments(1, addresses[2].address)
             console.log(result)
             expect(result).to.equal(ethers.utils.parseEther("1.0"))
+
+            var data = await contractInstance.loans(1)
+            console.log(data)
+            expect(data.approved).to.equal(true)
         })
     
         // it("Withdraw funds", async function(){
@@ -82,7 +86,7 @@ describe("Pool money", function () {
         })
 
         it("pay", async function(){
-            await expect(contractInstance.connect(addresses[1]).pay(1, {value: ethers.utils.parseEther("1")})).to.be.revertedWith("The person who pays back the loan must be the borrower");
+            await expect(contractInstance.connect(addresses[1]).pay(1, {value: ethers.utils.parseEther("1")})).to.be.revertedWith("The borrower of the loan must call this function");
              
             await contractInstance.pay(1, {value: ethers.utils.parseEther("1")})
             var result = await contractInstance.loans(1)
@@ -112,10 +116,10 @@ describe("Pool money", function () {
             // The third address in addresses is funding the loan request
             // We are checking if the third address funded the project or not by checking payments
 
-            await contractInstance.connect(addresses[2]).fund(loanId, {value: ethers.utils.parseEther("1.0")})
+            await contractInstance.connect(addresses[2]).fund(loanId, {value: ethers.utils.parseEther("0.50")})
             var result = await contractInstance.payments(loanId, addresses[2].address)
             console.log(result)
-            expect(result).to.equal(ethers.utils.parseEther("1.0"))
+            expect(result).to.equal(ethers.utils.parseEther("0.50"))
         })
 
         it("Withdraw funds before approval", async function(){
